@@ -8,3 +8,6 @@ export { RAGStatusWidget } from "./RAGStatusWidget";
 export { NewsFeed } from "./NewsFeed";
 export { NewsCard } from "./NewsCard";
 export { NewsFilters } from "./NewsFilters";
+export { NewsHeroCard } from "./NewsHeroCard";
+export { NewsCompactCard } from "./NewsCompactCard";
+export { NewsArticleDialog } from "./NewsArticleDialog";

@@ -18,6 +18,8 @@ export interface NewsItem {
     reference: string;
   }[];
   areas?: string[];
+  imageUrl?: string;
+  fullContent?: string;
 }
 
 interface NewsCardProps {

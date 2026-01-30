@@ -1,9 +1,17 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { NewsCard, NewsItem } from "./NewsCard";
+import { NewsItem } from "./NewsCard";
 import { NewsFilters, FilterState } from "./NewsFilters";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Newspaper, TrendingUp } from "lucide-react";
+import { Newspaper, TrendingUp, Sparkles } from "lucide-react";
+import { NewsHeroCard } from "./NewsHeroCard";
+import { NewsCompactCard } from "./NewsCompactCard";
+import { NewsArticleDialog } from "./NewsArticleDialog";
+
+// Import hero images
+import heroImage1 from "@/assets/news-hero-1.jpg";
+import heroImage2 from "@/assets/news-hero-2.jpg";
+import heroImage3 from "@/assets/news-hero-3.jpg";
 
 // Mock data - substituir por dados reais do seu RAG/Elastic
 const mockNews: NewsItem[] = [
@@ -19,6 +27,7 @@ const mockNews: NewsItem[] = [
       { type: "altera", reference: "Acórdão 987/2023" },
     ],
     areas: ["Licitações", "TI", "Contratação Direta"],
+    imageUrl: heroImage1,
   },
   {
     id: "2",
@@ -29,6 +38,7 @@ const mockNews: NewsItem[] = [
     date: "27/01/2024",
     organ: "TCU",
     areas: ["Licitações", "Emergência"],
+    imageUrl: heroImage2,
   },
   {
     id: "3",
@@ -43,6 +53,7 @@ const mockNews: NewsItem[] = [
       { type: "complementa", reference: "IN TCU 84/2022" },
     ],
     areas: ["Obras Públicas", "Fiscalização"],
+    imageUrl: heroImage3,
   },
   {
     id: "4",
@@ -64,6 +75,16 @@ const mockNews: NewsItem[] = [
     organ: "TCU",
     areas: ["Pregão", "Cautelar", "Saúde"],
   },
+  {
+    id: "6",
+    type: "normativo",
+    number: "Resolução 350/2024",
+    title: "Novas diretrizes para transparência em contratos administrativos",
+    summary: "Estabelece requisitos mínimos de publicidade e transparência para contratos administrativos acima de R$ 1 milhão, incluindo divulgação de aditivos e termos de ajuste.",
+    date: "22/01/2024",
+    organ: "TCU",
+    areas: ["Transparência", "Contratos"],
+  },
 ];
 
 interface NewsFeedProps {
@@ -78,6 +99,7 @@ export function NewsFeed({ className }: NewsFeedProps) {
     organ: null,
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedArticle, setSelectedArticle] = useState<NewsItem | null>(null);
 
   // Simular busca - conectar ao seu backend RAG/Elastic
   const handleSearch = (query: string) => {
@@ -106,67 +128,102 @@ export function NewsFeed({ className }: NewsFeedProps) {
     return true;
   });
 
+  // Separate hero (first with image) from rest
+  const heroArticle = filteredNews.find(item => item.imageUrl);
+  const restArticles = filteredNews.filter(item => item.id !== heroArticle?.id);
+
   return (
     <div className={cn("space-y-6", className)}>
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-apple-orange to-apple-pink flex items-center justify-center shadow-apple">
-            <Newspaper className="h-5 w-5 text-white" />
+      {/* Header - NYT style */}
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-apple-orange to-apple-pink flex items-center justify-center shadow-apple">
+              <Newspaper className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <h2 className="text-xl sm:text-2xl font-serif font-bold text-foreground">Novidades da Semana</h2>
+              <p className="text-xs text-muted-foreground flex items-center gap-1">
+                <Sparkles className="h-3 w-3" />
+                Curadoria inteligente de acórdãos, súmulas e normas
+              </p>
+            </div>
           </div>
-          <div>
-            <h2 className="text-lg font-semibold text-foreground">Novidades da Semana</h2>
-            <p className="text-xs text-muted-foreground">Acórdãos, súmulas e normas recentes</p>
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <TrendingUp className="h-3.5 w-3.5 text-apple-green" />
+            <span>{filteredNews.length} publicações encontradas</span>
           </div>
-        </div>
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <TrendingUp className="h-3.5 w-3.5 text-apple-green" />
-          <span>{filteredNews.length} publicações encontradas</span>
         </div>
       </div>
 
       {/* Filters & Search */}
       <NewsFilters onSearch={handleSearch} onFilterChange={handleFilterChange} />
 
-      {/* Timeline Feed */}
-      <div className="relative">
-        {/* Timeline line (desktop only) */}
-        <div className="absolute left-0 top-0 bottom-0 w-px bg-border hidden lg:block ml-3" />
-
-        {/* News items */}
-        <div className="space-y-4 lg:pl-10">
-          {isLoading ? (
-            // Loading skeletons
-            Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="glass rounded-2xl p-5 space-y-3">
-                <div className="flex items-center gap-2">
-                  <Skeleton className="h-5 w-20 rounded-full" />
+      {/* Editorial Feed */}
+      {isLoading ? (
+        // Loading skeletons
+        <div className="space-y-4">
+          <Skeleton className="w-full h-64 rounded-3xl" />
+          <div className="grid gap-4">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="flex gap-4 p-4 rounded-2xl bg-card/50">
+                <div className="flex-1 space-y-3">
                   <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-5 w-3/4" />
+                  <Skeleton className="h-12 w-full" />
                 </div>
-                <Skeleton className="h-5 w-3/4" />
-                <Skeleton className="h-12 w-full" />
-                <div className="flex gap-2">
-                  <Skeleton className="h-4 w-16 rounded-full" />
-                  <Skeleton className="h-4 w-16 rounded-full" />
-                </div>
+                <Skeleton className="w-24 h-24 rounded-xl" />
               </div>
-            ))
-          ) : filteredNews.length > 0 ? (
-            filteredNews.map((item) => <NewsCard key={item.id} item={item} />)
-          ) : (
-            // Empty state
-            <div className="glass rounded-2xl p-8 text-center">
-              <Newspaper className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
-              <h3 className="text-sm font-medium text-foreground mb-1">
-                Nenhum resultado encontrado
+            ))}
+          </div>
+        </div>
+      ) : filteredNews.length > 0 ? (
+        <div className="space-y-6">
+          {/* Hero Article - NYT style */}
+          {heroArticle && (
+            <NewsHeroCard 
+              item={heroArticle} 
+              onClick={() => setSelectedArticle(heroArticle)}
+            />
+          )}
+
+          {/* Secondary articles grid */}
+          {restArticles.length > 0 && (
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                Mais publicações
               </h3>
-              <p className="text-xs text-muted-foreground">
-                Tente ajustar os filtros ou termos de busca
-              </p>
+              <div className="grid gap-3">
+                {restArticles.map((item) => (
+                  <NewsCompactCard
+                    key={item.id}
+                    item={item}
+                    onClick={() => setSelectedArticle(item)}
+                  />
+                ))}
+              </div>
             </div>
           )}
         </div>
-      </div>
+      ) : (
+        // Empty state
+        <div className="glass rounded-2xl p-8 text-center">
+          <Newspaper className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
+          <h3 className="text-sm font-medium text-foreground mb-1">
+            Nenhum resultado encontrado
+          </h3>
+          <p className="text-xs text-muted-foreground">
+            Tente ajustar os filtros ou termos de busca
+          </p>
+        </div>
+      )}
+
+      {/* Article Dialog */}
+      <NewsArticleDialog
+        item={selectedArticle}
+        open={!!selectedArticle}
+        onOpenChange={(open) => !open && setSelectedArticle(null)}
+      />
     </div>
   );
 }
