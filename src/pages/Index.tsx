@@ -7,8 +7,13 @@ import {
   SourcesTable,
   RAGStatusWidget,
   NewsFeed,
+  QuickStatusBar,
+  SystemHealthBanner,
+  RecentActivityFeed,
 } from "@/components/dashboard";
+import { SystemHealthProvider } from "@/contexts/SystemHealthContext";
 import { FileText, Database, Activity, Layers } from "lucide-react";
+import type { ActivityItem } from "@/components/dashboard/RecentActivityFeed";
 
 // Mock data
 const mockSources = [
@@ -58,8 +63,44 @@ const mockSources = [
   },
 ];
 
+const mockActivities: ActivityItem[] = [
+  {
+    id: "1",
+    type: "sync_complete",
+    source: "tcu_acordaos",
+    message: "Synced 5.2K documents successfully",
+    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2h ago
+  },
+  {
+    id: "2",
+    type: "syncing",
+    source: "tcu_normas",
+    message: "Syncing in progress...",
+    timestamp: new Date(Date.now() - 15 * 60 * 1000), // 15m ago
+  },
+  {
+    id: "3",
+    type: "error",
+    source: "tcu_sumulas",
+    message: "2 errors occurred during sync",
+    timestamp: new Date(Date.now() - 45 * 60 * 1000), // 45m ago
+    details: "Connection timeout after 30s",
+  },
+  {
+    id: "4",
+    type: "sync_complete",
+    source: "Product Documentation",
+    message: "Indexed 1,247 PDF documents",
+    timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000), // 3h ago
+  },
+];
+
 const Index = () => {
   const [activeTab, setActiveTab] = useState("overview");
+
+  const handleRetry = (id: string) => {
+    console.log("Retrying activity:", id);
+  };
 
   const renderContent = () => {
     if (activeTab === "news") {
@@ -69,6 +110,30 @@ const Index = () => {
     // Overview content (default)
     return (
       <>
+        {/* System Health Banner */}
+        <SystemHealthBanner className="mb-4" />
+
+        {/* Quick Status Bar */}
+        <QuickStatusBar
+          syncStatus={{
+            synced: 12,
+            total: 14,
+            pending: 2,
+            failed: 0,
+            inProgress: 1,
+          }}
+          elasticsearch={{
+            status: "online",
+            docsIndexed: 542000,
+            responseTime: 142,
+          }}
+          throughput={{
+            rate: "12.5K/min",
+            eta: "28 minutes",
+          }}
+          className="mb-6"
+        />
+
         {/* Metrics Grid */}
         <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 stagger-children">
           <MetricCard
@@ -124,6 +189,7 @@ const Index = () => {
               progress={100}
               items={{ current: 4, total: 4 }}
               colorScheme="blue"
+              lastUpdated="2 hours ago"
             />
             <PipelineStage
               name="Sync"
@@ -131,6 +197,7 @@ const Index = () => {
               progress={95}
               items={{ current: 11892, total: 12358 }}
               colorScheme="green"
+              lastUpdated="15 minutes ago"
             />
             <PipelineStage
               name="Processing"
@@ -138,6 +205,7 @@ const Index = () => {
               progress={82}
               items={{ current: 10134, total: 12358 }}
               colorScheme="orange"
+              lastUpdated="Just now"
             />
             <PipelineStage
               name="Indexing"
@@ -145,6 +213,7 @@ const Index = () => {
               progress={74}
               items={{ current: 9145, total: 12358 }}
               colorScheme="purple"
+              lastUpdated="Just now"
             />
             <PipelineStage
               name="Embedding"
@@ -152,17 +221,23 @@ const Index = () => {
               progress={68}
               items={{ current: 8403, total: 12358 }}
               colorScheme="teal"
+              lastUpdated="Just now"
             />
           </div>
           
-          {/* RAG Status Widget */}
-          <RAGStatusWidget
-            status="syncing"
-            chunks={847293}
-            lastSync="2 minutes ago"
-            vectorSize="4.2 GB"
-            className="lg:max-w-xs"
-          />
+          {/* RAG Status + Activity Feed Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <RAGStatusWidget
+              status="syncing"
+              chunks={847293}
+              lastSync="2 minutes ago"
+              vectorSize="4.2 GB"
+            />
+            <RecentActivityFeed
+              activities={mockActivities}
+              onRetry={handleRetry}
+            />
+          </div>
         </section>
 
         {/* Sources Table */}
@@ -174,21 +249,23 @@ const Index = () => {
   };
 
   return (
-    <div className="flex min-h-screen w-full bg-background">
-      {/* Sidebar */}
-      <DashboardSidebar activeTab={activeTab} onTabChange={setActiveTab} />
+    <SystemHealthProvider>
+      <div className="flex min-h-screen w-full bg-background">
+        {/* Sidebar */}
+        <DashboardSidebar activeTab={activeTab} onTabChange={setActiveTab} />
 
-      {/* Main content */}
-      <div className="flex-1 flex flex-col min-h-screen overflow-hidden">
-        <DashboardHeader />
+        {/* Main content */}
+        <div className="flex-1 flex flex-col min-h-screen overflow-hidden">
+          <DashboardHeader connectionStatus="connected" />
 
-        <main className="flex-1 overflow-y-auto pb-20 lg:pb-6">
-          <div className="p-4 sm:p-6 space-y-6 max-w-[1600px] mx-auto">
-            {renderContent()}
-          </div>
-        </main>
+          <main className="flex-1 overflow-y-auto pb-20 lg:pb-6">
+            <div className="p-4 sm:p-6 space-y-6 max-w-[1600px] mx-auto">
+              {renderContent()}
+            </div>
+          </main>
+        </div>
       </div>
-    </div>
+    </SystemHealthProvider>
   );
 };
 

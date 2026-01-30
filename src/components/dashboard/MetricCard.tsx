@@ -11,6 +11,7 @@ interface MetricCardProps {
   };
   progress?: number;
   colorScheme?: "blue" | "green" | "orange" | "purple" | "teal";
+  variant?: "default" | "compact";
   className?: string;
 }
 
@@ -55,10 +56,62 @@ export function MetricCard({
   trend,
   progress,
   colorScheme = "blue",
+  variant = "default",
   className,
 }: MetricCardProps) {
   const colors = colorSchemes[colorScheme];
 
+  // Compact variant - smaller, inline layout
+  if (variant === "compact") {
+    return (
+      <div
+        className={cn(
+          "relative bg-card rounded-xl p-3 shadow-apple-sm transition-apple",
+          "hover:shadow-apple hover:-translate-y-0.5",
+          "border border-border/50",
+          className
+        )}
+      >
+        <div className="flex items-center gap-3">
+          <div className={cn("p-1.5 rounded-lg flex-shrink-0", colors.iconBg)}>
+            <div className={colors.iconColor}>{icon}</div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-xs text-muted-foreground truncate">{title}</p>
+              {trend && (
+                <span
+                  className={cn(
+                    "text-[10px] font-medium px-1.5 py-0.5 rounded-full flex-shrink-0",
+                    trend.isPositive
+                      ? "bg-apple-green/10 text-apple-green"
+                      : "bg-apple-red/10 text-apple-red"
+                  )}
+                >
+                  {trend.isPositive ? "+" : ""}{trend.value}%
+                </span>
+              )}
+            </div>
+            <p className="text-lg font-semibold tracking-tight text-foreground">
+              {value}
+            </p>
+          </div>
+        </div>
+        {progress !== undefined && (
+          <div className="mt-2">
+            <div className={cn("h-1 rounded-full overflow-hidden", colors.progressBg)}>
+              <div
+                className={cn("h-full rounded-full transition-all duration-700 ease-out", colors.progressFill)}
+                style={{ width: `${Math.min(progress, 100)}%` }}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Default variant
   return (
     <div
       className={cn(
