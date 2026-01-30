@@ -62,20 +62,20 @@ export function MetricCard({
   return (
     <div
       className={cn(
-        "relative bg-card rounded-2xl p-5 shadow-apple transition-apple",
+        "relative bg-card rounded-2xl p-4 sm:p-5 shadow-apple transition-apple",
         "hover:shadow-apple-lg hover:-translate-y-0.5",
         "border border-border/50",
         className
       )}
     >
-      <div className="flex items-start justify-between mb-4">
-        <div className={cn("p-2.5 rounded-xl", colors.iconBg)}>
+      <div className="flex items-start justify-between mb-3 sm:mb-4">
+        <div className={cn("p-2 sm:p-2.5 rounded-xl", colors.iconBg)}>
           <div className={colors.iconColor}>{icon}</div>
         </div>
         {trend && (
           <span
             className={cn(
-              "text-xs font-medium px-2 py-1 rounded-full",
+              "text-[10px] sm:text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full",
               trend.isPositive
                 ? "bg-apple-green/10 text-apple-green"
                 : "bg-apple-red/10 text-apple-red"
@@ -87,25 +87,25 @@ export function MetricCard({
         )}
       </div>
 
-      <div className="space-y-1">
-        <p className="text-sm font-medium text-muted-foreground">{title}</p>
-        <p className="text-2xl font-semibold tracking-tight text-foreground">
+      <div className="space-y-0.5 sm:space-y-1">
+        <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate">{title}</p>
+        <p className="text-xl sm:text-2xl font-semibold tracking-tight text-foreground">
           {value}
         </p>
         {subtitle && (
-          <p className="text-xs text-muted-foreground">{subtitle}</p>
+          <p className="text-[10px] sm:text-xs text-muted-foreground truncate">{subtitle}</p>
         )}
       </div>
 
       {progress !== undefined && (
-        <div className="mt-4">
+        <div className="mt-3 sm:mt-4">
           <div className={cn("h-1.5 rounded-full overflow-hidden", colors.progressBg)}>
             <div
               className={cn("h-full rounded-full transition-all duration-700 ease-out", colors.progressFill)}
               style={{ width: `${Math.min(progress, 100)}%` }}
             />
           </div>
-          <p className="text-xs text-muted-foreground mt-1.5">
+          <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 sm:mt-1.5">
             {progress.toFixed(1)}% complete
           </p>
         </div>
