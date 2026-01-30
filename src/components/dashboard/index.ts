@@ -5,3 +5,6 @@ export { ProgressRing } from "./ProgressRing";
 export { PipelineStage } from "./PipelineStage";
 export { SourcesTable } from "./SourcesTable";
 export { RAGStatusWidget } from "./RAGStatusWidget";
+export { NewsFeed } from "./NewsFeed";
+export { NewsCard } from "./NewsCard";
+export { NewsFilters } from "./NewsFilters";
