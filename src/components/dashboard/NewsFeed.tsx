@@ -133,26 +133,17 @@ export function NewsFeed({ className }: NewsFeedProps) {
   const restArticles = filteredNews.filter(item => item.id !== heroArticle?.id);
 
   return (
-    <div className={cn("space-y-6", className)}>
-      {/* Header - NYT style */}
-      <div className="flex flex-col gap-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-apple-orange to-apple-pink flex items-center justify-center shadow-apple">
-              <Newspaper className="h-5 w-5 text-white" />
-            </div>
-            <div>
-              <h2 className="text-xl sm:text-2xl font-serif font-bold text-foreground">Novidades da Semana</h2>
-              <p className="text-xs text-muted-foreground flex items-center gap-1">
-                <Sparkles className="h-3 w-3" />
-                Curadoria inteligente de acórdãos, súmulas e normas
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <TrendingUp className="h-3.5 w-3.5 text-apple-green" />
-            <span>{filteredNews.length} publicações encontradas</span>
-          </div>
+    <div className={cn("space-y-5", className)}>
+      {/* Minimal header - NYT style */}
+      <div className="flex items-center justify-between border-b border-border pb-3">
+        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+          <span className="font-medium text-foreground">Sexta-feira, 30 de Janeiro de 2026</span>
+          <span className="hidden sm:inline">•</span>
+          <span className="hidden sm:inline">{filteredNews.length} publicações</span>
+        </div>
+        <div className="flex items-center gap-2 text-xs">
+          <span className="text-apple-red font-semibold">AO VIVO</span>
+          <span className="text-muted-foreground">Atualizado há 2 min</span>
         </div>
       </div>
 
