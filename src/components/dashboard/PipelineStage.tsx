@@ -1,0 +1,117 @@
+import { cn } from "@/lib/utils";
+import { CheckCircle2, Loader2, AlertCircle, Clock } from "lucide-react";
+
+type StageStatus = "complete" | "processing" | "pending" | "error";
+
+interface PipelineStageProps {
+  name: string;
+  status: StageStatus;
+  progress: number;
+  items?: { current: number; total: number };
+  colorScheme: "blue" | "green" | "orange" | "purple" | "teal";
+  className?: string;
+}
+
+const statusIcons: Record<StageStatus, React.ReactNode> = {
+  complete: <CheckCircle2 className="h-4 w-4" />,
+  processing: <Loader2 className="h-4 w-4 animate-spin" />,
+  pending: <Clock className="h-4 w-4" />,
+  error: <AlertCircle className="h-4 w-4" />,
+};
+
+const statusLabels: Record<StageStatus, string> = {
+  complete: "Complete",
+  processing: "Processing",
+  pending: "Pending",
+  error: "Error",
+};
+
+const colorSchemes = {
+  blue: {
+    bg: "bg-apple-blue/10",
+    fill: "bg-gradient-to-r from-apple-blue to-apple-blue/80",
+    text: "text-apple-blue",
+    badge: "bg-apple-blue/10 text-apple-blue",
+  },
+  green: {
+    bg: "bg-apple-green/10",
+    fill: "bg-gradient-to-r from-apple-green to-apple-green/80",
+    text: "text-apple-green",
+    badge: "bg-apple-green/10 text-apple-green",
+  },
+  orange: {
+    bg: "bg-apple-orange/10",
+    fill: "bg-gradient-to-r from-apple-orange to-apple-orange/80",
+    text: "text-apple-orange",
+    badge: "bg-apple-orange/10 text-apple-orange",
+  },
+  purple: {
+    bg: "bg-apple-purple/10",
+    fill: "bg-gradient-to-r from-apple-purple to-apple-purple/80",
+    text: "text-apple-purple",
+    badge: "bg-apple-purple/10 text-apple-purple",
+  },
+  teal: {
+    bg: "bg-apple-teal/10",
+    fill: "bg-gradient-to-r from-apple-teal to-apple-teal/80",
+    text: "text-apple-teal",
+    badge: "bg-apple-teal/10 text-apple-teal",
+  },
+};
+
+export function PipelineStage({
+  name,
+  status,
+  progress,
+  items,
+  colorScheme,
+  className,
+}: PipelineStageProps) {
+  const colors = colorSchemes[colorScheme];
+
+  return (
+    <div
+      className={cn(
+        "bg-card rounded-xl p-4 border border-border/50 shadow-apple-sm transition-apple",
+        "hover:shadow-apple",
+        className
+      )}
+    >
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <span className={cn("font-medium text-sm", colors.text)}>{name}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          {items && (
+            <span className="text-xs text-muted-foreground">
+              {items.current}/{items.total}
+            </span>
+          )}
+          <span
+            className={cn(
+              "flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded-full",
+              status === "complete" && "bg-apple-green/10 text-apple-green",
+              status === "processing" && colors.badge,
+              status === "pending" && "bg-muted text-muted-foreground",
+              status === "error" && "bg-apple-red/10 text-apple-red"
+            )}
+          >
+            {statusIcons[status]}
+            {statusLabels[status]}
+          </span>
+        </div>
+      </div>
+
+      <div className={cn("h-2 rounded-full overflow-hidden", colors.bg)}>
+        <div
+          className={cn("h-full rounded-full transition-all duration-500 ease-out", colors.fill)}
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+
+      <div className="flex justify-end mt-2">
+        <span className={cn("text-xs font-medium", colors.text)}>{progress}%</span>
+      </div>
+    </div>
+  );
+}
