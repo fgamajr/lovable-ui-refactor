@@ -1,5 +1,11 @@
 import { cn } from "@/lib/utils";
 import { CheckCircle2, Loader2, AlertCircle, Clock } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type StageStatus = "complete" | "processing" | "pending" | "error";
 
@@ -9,6 +15,7 @@ interface PipelineStageProps {
   progress: number;
   items?: { current: number; total: number };
   colorScheme: "blue" | "green" | "orange" | "purple" | "teal";
+  lastUpdated?: string;
   className?: string;
 }
 
@@ -24,6 +31,13 @@ const statusLabels: Record<StageStatus, string> = {
   processing: "Processing",
   pending: "Pending",
   error: "Error",
+};
+
+const statusTooltips: Record<StageStatus, string> = {
+  complete: "All items have been processed successfully",
+  processing: "Currently processing items",
+  pending: "Waiting to start processing",
+  error: "An error occurred during processing",
 };
 
 const colorSchemes = {
@@ -65,52 +79,63 @@ export function PipelineStage({
   progress,
   items,
   colorScheme,
+  lastUpdated = "Just now",
   className,
 }: PipelineStageProps) {
   const colors = colorSchemes[colorScheme];
 
   return (
-    <div
-      className={cn(
-        "bg-card rounded-xl p-4 border border-border/50 shadow-apple-sm transition-apple",
-        "hover:shadow-apple",
-        className
-      )}
-    >
-      {/* Header: name + status badge */}
-      <div className="flex items-start justify-between gap-2 mb-2">
-        <span className={cn("font-medium text-sm truncate", colors.text)}>{name}</span>
-        <span
-          className={cn(
-            "flex-shrink-0 flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full whitespace-nowrap",
-            status === "complete" && "bg-apple-green/10 text-apple-green",
-            status === "processing" && colors.badge,
-            status === "pending" && "bg-muted text-muted-foreground",
-            status === "error" && "bg-apple-red/10 text-apple-red"
-          )}
-        >
-          {statusIcons[status]}
-          <span className="hidden sm:inline">{statusLabels[status]}</span>
-        </span>
-      </div>
-      
-      {/* Items count */}
-      {items && (
-        <div className="text-[11px] text-muted-foreground mb-2">
-          {items.current.toLocaleString()}/{items.total.toLocaleString()}
+    <TooltipProvider delayDuration={200}>
+      <div
+        className={cn(
+          "bg-card rounded-xl p-4 border border-border/50 shadow-apple-sm transition-apple",
+          "hover:shadow-apple",
+          className
+        )}
+      >
+        {/* Header: name + status badge */}
+        <div className="flex items-start justify-between gap-2 mb-2">
+          <span className={cn("font-medium text-sm truncate", colors.text)}>{name}</span>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span
+                className={cn(
+                  "flex-shrink-0 flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full whitespace-nowrap cursor-help",
+                  status === "complete" && "bg-apple-green/10 text-apple-green",
+                  status === "processing" && colors.badge,
+                  status === "pending" && "bg-muted text-muted-foreground",
+                  status === "error" && "bg-apple-red/10 text-apple-red"
+                )}
+              >
+                {statusIcons[status]}
+                <span className="hidden sm:inline">{statusLabels[status]}</span>
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{statusTooltips[status]}</p>
+              <p className="text-xs text-muted-foreground mt-1">Last updated: {lastUpdated}</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
-      )}
+        
+        {/* Items count */}
+        {items && (
+          <div className="text-[11px] text-muted-foreground mb-2">
+            {items.current.toLocaleString()}/{items.total.toLocaleString()}
+          </div>
+        )}
 
-      <div className={cn("h-2 rounded-full overflow-hidden", colors.bg)}>
-        <div
-          className={cn("h-full rounded-full transition-all duration-500 ease-out", colors.fill)}
-          style={{ width: `${progress}%` }}
-        />
-      </div>
+        <div className={cn("h-2 rounded-full overflow-hidden", colors.bg)}>
+          <div
+            className={cn("h-full rounded-full transition-all duration-500 ease-out", colors.fill)}
+            style={{ width: `${progress}%` }}
+          />
+        </div>
 
-      <div className="flex justify-end mt-2">
-        <span className={cn("text-xs font-medium", colors.text)}>{progress}%</span>
+        <div className="flex justify-end mt-2">
+          <span className={cn("text-xs font-medium", colors.text)}>{progress}%</span>
+        </div>
       </div>
-    </div>
+    </TooltipProvider>
   );
 }
