@@ -11,3 +11,4 @@ export { NewsFilters } from "./NewsFilters";
 export { NewsHeroCard } from "./NewsHeroCard";
 export { NewsCompactCard } from "./NewsCompactCard";
 export { NewsArticleDialog } from "./NewsArticleDialog";
+export { NewsFrontPage } from "./NewsFrontPage";
