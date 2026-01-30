@@ -7,7 +7,8 @@ import {
   Search,
   ChevronLeft,
   ChevronRight,
-  Sparkles
+  Sparkles,
+  Newspaper
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -63,6 +64,7 @@ export function DashboardSidebar({ activeTab, onTabChange }: DashboardSidebarPro
 
   const navItems = [
     { id: "overview", icon: LayoutDashboard, label: "Overview" },
+    { id: "news", icon: Newspaper, label: "Novidades" },
     { id: "sources", icon: Database, label: "Data Sources" },
     { id: "search", icon: Search, label: "Search Index" },
     { id: "history", icon: History, label: "History" },
