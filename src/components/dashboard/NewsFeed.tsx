@@ -3,9 +3,8 @@ import { cn } from "@/lib/utils";
 import { NewsItem } from "./NewsCard";
 import { NewsFilters, FilterState } from "./NewsFilters";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Newspaper, TrendingUp, Sparkles } from "lucide-react";
-import { NewsHeroCard } from "./NewsHeroCard";
-import { NewsCompactCard } from "./NewsCompactCard";
+import { Newspaper } from "lucide-react";
+import { NewsFrontPage } from "./NewsFrontPage";
 import { NewsArticleDialog } from "./NewsArticleDialog";
 
 // Import hero images
@@ -128,10 +127,6 @@ export function NewsFeed({ className }: NewsFeedProps) {
     return true;
   });
 
-  // Separate hero (first with image) from rest
-  const heroArticle = filteredNews.find(item => item.imageUrl);
-  const restArticles = filteredNews.filter(item => item.id !== heroArticle?.id);
-
   return (
     <div className={cn("space-y-5", className)}>
       {/* Minimal header - NYT style */}
@@ -145,6 +140,15 @@ export function NewsFeed({ className }: NewsFeedProps) {
           <span className="text-apple-red font-semibold">AO VIVO</span>
           <span className="text-muted-foreground">Atualizado há 2 min</span>
         </div>
+      </div>
+
+      {/* Trending ticker - NYT style */}
+      <div className="flex items-center gap-4 text-xs overflow-x-auto pb-2 border-b border-border">
+        <span className="text-apple-red font-bold shrink-0">DESTAQUES</span>
+        <a href="#" className="text-foreground hover:text-apple-blue shrink-0">Licitações 2min</a>
+        <a href="#" className="text-foreground hover:text-apple-blue shrink-0">Obras Públicas 5min</a>
+        <a href="#" className="text-foreground hover:text-apple-blue shrink-0">Convênios 8min</a>
+        <a href="#" className="text-foreground hover:text-apple-blue shrink-0">Fiscalização 12min</a>
       </div>
 
       {/* Filters & Search */}
@@ -169,33 +173,10 @@ export function NewsFeed({ className }: NewsFeedProps) {
           </div>
         </div>
       ) : filteredNews.length > 0 ? (
-        <div className="space-y-6">
-          {/* Hero Article - NYT style */}
-          {heroArticle && (
-            <NewsHeroCard 
-              item={heroArticle} 
-              onClick={() => setSelectedArticle(heroArticle)}
-            />
-          )}
-
-          {/* Secondary articles grid */}
-          {restArticles.length > 0 && (
-            <div className="space-y-3">
-              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                Mais publicações
-              </h3>
-              <div className="grid gap-3">
-                {restArticles.map((item) => (
-                  <NewsCompactCard
-                    key={item.id}
-                    item={item}
-                    onClick={() => setSelectedArticle(item)}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
+        <NewsFrontPage 
+          articles={filteredNews}
+          onArticleClick={setSelectedArticle}
+        />
       ) : (
         // Empty state
         <div className="glass rounded-2xl p-8 text-center">
