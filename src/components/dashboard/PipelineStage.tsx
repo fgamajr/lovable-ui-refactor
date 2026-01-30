@@ -77,30 +77,29 @@ export function PipelineStage({
         className
       )}
     >
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <span className={cn("font-medium text-sm", colors.text)}>{name}</span>
-        </div>
-        <div className="flex items-center gap-2">
-          {items && (
-            <span className="text-xs text-muted-foreground">
-              {items.current}/{items.total}
-            </span>
+      {/* Header: name + status badge */}
+      <div className="flex items-start justify-between gap-2 mb-2">
+        <span className={cn("font-medium text-sm truncate", colors.text)}>{name}</span>
+        <span
+          className={cn(
+            "flex-shrink-0 flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full whitespace-nowrap",
+            status === "complete" && "bg-apple-green/10 text-apple-green",
+            status === "processing" && colors.badge,
+            status === "pending" && "bg-muted text-muted-foreground",
+            status === "error" && "bg-apple-red/10 text-apple-red"
           )}
-          <span
-            className={cn(
-              "flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded-full",
-              status === "complete" && "bg-apple-green/10 text-apple-green",
-              status === "processing" && colors.badge,
-              status === "pending" && "bg-muted text-muted-foreground",
-              status === "error" && "bg-apple-red/10 text-apple-red"
-            )}
-          >
-            {statusIcons[status]}
-            {statusLabels[status]}
-          </span>
-        </div>
+        >
+          {statusIcons[status]}
+          <span className="hidden sm:inline">{statusLabels[status]}</span>
+        </span>
       </div>
+      
+      {/* Items count */}
+      {items && (
+        <div className="text-[11px] text-muted-foreground mb-2">
+          {items.current.toLocaleString()}/{items.total.toLocaleString()}
+        </div>
+      )}
 
       <div className={cn("h-2 rounded-full overflow-hidden", colors.bg)}>
         <div
