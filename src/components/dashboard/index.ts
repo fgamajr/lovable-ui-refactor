@@ -4,6 +4,7 @@ export { MetricCard } from "./MetricCard";
 export { ProgressRing } from "./ProgressRing";
 export { PipelineStage } from "./PipelineStage";
 export { SourcesTable } from "./SourcesTable";
+export { SourceDetailDialog } from "./SourceDetailDialog";
 export { RAGStatusWidget } from "./RAGStatusWidget";
 export { NewsFeed } from "./NewsFeed";
 export { NewsCard } from "./NewsCard";

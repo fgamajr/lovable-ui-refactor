@@ -9,6 +9,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  SourceNameHoverCard,
+  SourceTypeHoverCard,
+  DocsCountPopover,
+  PipelineStageHoverCard,
+} from "./source-hovercards";
+import { SourceDetailDialog } from "./SourceDetailDialog";
 
 interface Source {
   id: string;
@@ -21,6 +28,12 @@ interface Source {
   indexing: number;
   embedding: number;
   lastSync?: string;
+  // Extended fields for hovercards
+  description?: string;
+  createdAt?: Date;
+  lastUpdated?: Date;
+  owner?: string;
+  tags?: string[];
 }
 
 interface SourcesTableProps {
@@ -111,7 +124,7 @@ function SourceRowSkeleton() {
 }
 
 // Mobile card view for a single source
-function SourceCard({ source }: { source: Source }) {
+function SourceCard({ source, onOpenDetail }: { source: Source; onOpenDetail: () => void }) {
   const [expanded, setExpanded] = useState(false);
   const Icon = typeIcons[source.type];
 
@@ -122,19 +135,43 @@ function SourceCard({ source }: { source: Source }) {
         onClick={() => setExpanded(!expanded)}
       >
         <div className="flex items-center gap-3 min-w-0">
-          <Badge 
-            variant="secondary" 
-            className="gap-1 font-normal text-[10px] bg-secondary/80 px-1.5 py-0.5 flex-shrink-0"
+          <SourceTypeHoverCard type={source.type}>
+            <Badge 
+              variant="secondary" 
+              className="gap-1 font-normal text-[10px] bg-secondary/80 px-1.5 py-0.5 flex-shrink-0 cursor-help"
+            >
+              <Icon className="h-3 w-3" />
+              {typeLabels[source.type]}
+            </Badge>
+          </SourceTypeHoverCard>
+          <SourceNameHoverCard
+            name={source.name}
+            description={source.description}
+            createdAt={source.createdAt}
+            lastUpdated={source.lastUpdated}
+            owner={source.owner}
+            tags={source.tags}
           >
-            <Icon className="h-3 w-3" />
-            {typeLabels[source.type]}
-          </Badge>
-          <span className="font-medium text-sm truncate">{source.name}</span>
+            <span 
+              className="font-medium text-sm truncate hover:text-primary transition-colors cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpenDetail();
+              }}
+            >
+              {source.name}
+            </span>
+          </SourceNameHoverCard>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
-          <span className="text-xs text-muted-foreground tabular-nums">
-            {source.documents.toLocaleString()} docs
-          </span>
+          <DocsCountPopover totalDocs={source.documents}>
+            <span 
+              className="text-xs text-muted-foreground tabular-nums hover:text-primary cursor-pointer transition-colors"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {source.documents.toLocaleString()} docs
+            </span>
+          </DocsCountPopover>
           <ChevronDown className={cn(
             "h-4 w-4 text-muted-foreground transition-transform",
             expanded && "rotate-180"
@@ -147,23 +184,33 @@ function SourceCard({ source }: { source: Source }) {
           <div className="mt-4 space-y-3 pt-3 border-t border-border/50">
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground">Discovery</span>
-              <MiniProgress value={source.discovery} colorScheme="blue" />
+              <PipelineStageHoverCard stage="discovery" progress={source.discovery} totalDocs={source.documents}>
+                <div><MiniProgressInner value={source.discovery} colorScheme="blue" /></div>
+              </PipelineStageHoverCard>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground">Sync</span>
-              <MiniProgress value={source.sync} colorScheme="green" />
+              <PipelineStageHoverCard stage="sync" progress={source.sync} totalDocs={source.documents}>
+                <div><MiniProgressInner value={source.sync} colorScheme="green" /></div>
+              </PipelineStageHoverCard>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground">Processing</span>
-              <MiniProgress value={source.processing} colorScheme="orange" />
+              <PipelineStageHoverCard stage="processing" progress={source.processing} totalDocs={source.documents}>
+                <div><MiniProgressInner value={source.processing} colorScheme="orange" /></div>
+              </PipelineStageHoverCard>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground">Indexing</span>
-              <MiniProgress value={source.indexing} colorScheme="purple" />
+              <PipelineStageHoverCard stage="indexing" progress={source.indexing} totalDocs={source.documents}>
+                <div><MiniProgressInner value={source.indexing} colorScheme="purple" /></div>
+              </PipelineStageHoverCard>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground">Embedding</span>
-              <MiniProgress value={source.embedding} colorScheme="teal" />
+              <PipelineStageHoverCard stage="embedding" progress={source.embedding} totalDocs={source.documents}>
+                <div><MiniProgressInner value={source.embedding} colorScheme="teal" /></div>
+              </PipelineStageHoverCard>
             </div>
           </div>
         </TooltipProvider>
@@ -207,6 +254,8 @@ function SortableHeader({
 export function SourcesTable({ sources, isLoading = false, className }: SourcesTableProps) {
   const [sortField, setSortField] = useState<SortField>("name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
+  const [selectedSource, setSelectedSource] = useState<Source | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -215,6 +264,11 @@ export function SourcesTable({ sources, isLoading = false, className }: SourcesT
       setSortField(field);
       setSortDirection("asc");
     }
+  };
+
+  const handleOpenDetail = (source: Source) => {
+    setSelectedSource(source);
+    setDialogOpen(true);
   };
 
   const sortedSources = [...sources].sort((a, b) => {
@@ -250,7 +304,11 @@ export function SourcesTable({ sources, isLoading = false, className }: SourcesT
           ))
         ) : (
           sortedSources.map((source) => (
-            <SourceCard key={source.id} source={source} />
+            <SourceCard 
+              key={source.id} 
+              source={source} 
+              onOpenDetail={() => handleOpenDetail(source)}
+            />
           ))
         )}
       </div>
@@ -292,33 +350,65 @@ export function SourcesTable({ sources, isLoading = false, className }: SourcesT
                           index % 2 === 0 && "bg-muted/20"
                         )}
                       >
-                        <td className="p-4 font-medium">{source.name}</td>
                         <td className="p-4">
-                          <Badge 
-                            variant="secondary" 
-                            className="gap-1.5 font-normal text-xs bg-secondary/80"
+                          <SourceNameHoverCard
+                            name={source.name}
+                            description={source.description}
+                            createdAt={source.createdAt}
+                            lastUpdated={source.lastUpdated}
+                            owner={source.owner}
+                            tags={source.tags}
                           >
-                            <Icon className="h-3 w-3" />
-                            {typeLabels[source.type]}
-                          </Badge>
-                        </td>
-                        <td className="p-4 text-right tabular-nums">
-                          {source.documents.toLocaleString()}
-                        </td>
-                        <td className="p-4">
-                          <MiniProgress value={source.discovery} colorScheme="blue" />
+                            <span 
+                              className="font-medium hover:text-primary transition-colors cursor-pointer"
+                              onClick={() => handleOpenDetail(source)}
+                            >
+                              {source.name}
+                            </span>
+                          </SourceNameHoverCard>
                         </td>
                         <td className="p-4">
-                          <MiniProgress value={source.sync} colorScheme="green" />
+                          <SourceTypeHoverCard type={source.type}>
+                            <Badge 
+                              variant="secondary" 
+                              className="gap-1.5 font-normal text-xs bg-secondary/80 cursor-help"
+                            >
+                              <Icon className="h-3 w-3" />
+                              {typeLabels[source.type]}
+                            </Badge>
+                          </SourceTypeHoverCard>
+                        </td>
+                        <td className="p-4 text-right">
+                          <DocsCountPopover totalDocs={source.documents}>
+                            <span className="tabular-nums hover:text-primary cursor-pointer transition-colors">
+                              {source.documents.toLocaleString()}
+                            </span>
+                          </DocsCountPopover>
                         </td>
                         <td className="p-4">
-                          <MiniProgress value={source.processing} colorScheme="orange" />
+                          <PipelineStageHoverCard stage="discovery" progress={source.discovery} totalDocs={source.documents}>
+                            <div><MiniProgressInner value={source.discovery} colorScheme="blue" /></div>
+                          </PipelineStageHoverCard>
                         </td>
                         <td className="p-4">
-                          <MiniProgress value={source.indexing} colorScheme="purple" />
+                          <PipelineStageHoverCard stage="sync" progress={source.sync} totalDocs={source.documents}>
+                            <div><MiniProgressInner value={source.sync} colorScheme="green" /></div>
+                          </PipelineStageHoverCard>
                         </td>
                         <td className="p-4">
-                          <MiniProgress value={source.embedding} colorScheme="teal" />
+                          <PipelineStageHoverCard stage="processing" progress={source.processing} totalDocs={source.documents}>
+                            <div><MiniProgressInner value={source.processing} colorScheme="orange" /></div>
+                          </PipelineStageHoverCard>
+                        </td>
+                        <td className="p-4">
+                          <PipelineStageHoverCard stage="indexing" progress={source.indexing} totalDocs={source.documents}>
+                            <div><MiniProgressInner value={source.indexing} colorScheme="purple" /></div>
+                          </PipelineStageHoverCard>
+                        </td>
+                        <td className="p-4">
+                          <PipelineStageHoverCard stage="embedding" progress={source.embedding} totalDocs={source.documents}>
+                            <div><MiniProgressInner value={source.embedding} colorScheme="teal" /></div>
+                          </PipelineStageHoverCard>
                         </td>
                       </tr>
                     );
@@ -329,6 +419,15 @@ export function SourcesTable({ sources, isLoading = false, className }: SourcesT
           </TooltipProvider>
         </div>
       </div>
+
+      {/* Detail Dialog */}
+      {selectedSource && (
+        <SourceDetailDialog
+          open={dialogOpen}
+          onOpenChange={setDialogOpen}
+          source={selectedSource}
+        />
+      )}
     </div>
   );
 }

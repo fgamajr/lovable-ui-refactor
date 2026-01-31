@@ -15,7 +15,7 @@ import { SystemHealthProvider } from "@/contexts/SystemHealthContext";
 import { FileText, Database, Activity, Layers } from "lucide-react";
 import type { ActivityItem } from "@/components/dashboard/RecentActivityFeed";
 
-// Mock data
+// Mock data with extended fields for hovercards
 const mockSources = [
   {
     id: "1",
@@ -27,6 +27,11 @@ const mockSources = [
     processing: 85,
     indexing: 72,
     embedding: 68,
+    description: "Manuais de produto, guias de usuário e documentação técnica em PDF",
+    createdAt: new Date("2024-01-15"),
+    lastUpdated: new Date(Date.now() - 2 * 60 * 60 * 1000),
+    owner: "equipe-docs@empresa.com",
+    tags: ["manual", "produto", "v2.0"],
   },
   {
     id: "2",
@@ -38,6 +43,11 @@ const mockSources = [
     processing: 90,
     indexing: 88,
     embedding: 85,
+    description: "Base de dados de clientes com histórico de interações e tickets",
+    createdAt: new Date("2023-11-20"),
+    lastUpdated: new Date(Date.now() - 15 * 60 * 1000),
+    owner: "data-team@empresa.com",
+    tags: ["clientes", "crm", "suporte"],
   },
   {
     id: "3",
@@ -49,6 +59,11 @@ const mockSources = [
     processing: 100,
     indexing: 100,
     embedding: 100,
+    description: "Base de conhecimento interna com artigos e FAQs",
+    createdAt: new Date("2024-02-01"),
+    lastUpdated: new Date(Date.now() - 1 * 60 * 60 * 1000),
+    owner: "kb-admin@empresa.com",
+    tags: ["faq", "interno", "suporte"],
   },
   {
     id: "4",
@@ -60,6 +75,11 @@ const mockSources = [
     processing: 45,
     indexing: 32,
     embedding: 28,
+    description: "Feed de dados externos do TCU via API REST com paginação",
+    createdAt: new Date("2024-03-10"),
+    lastUpdated: new Date(Date.now() - 45 * 60 * 1000),
+    owner: "integracao@empresa.com",
+    tags: ["tcu", "api", "externo"],
   },
 ];
 
