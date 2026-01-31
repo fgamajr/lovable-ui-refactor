@@ -49,19 +49,19 @@
     --apple-pink: 330 81% 60%;
     --apple-yellow: 45 93% 47%;
 
-    /* Glass tokens - light mode */
-    --glass-bg: 0 0% 100% / 0.85;
-    --glass-border: 220 13% 80% / 0.6;
-    --glass-blur: 24px;
+    /* Glass tokens - light mode (solid backgrounds) */
+    --glass-bg: 0 0% 100%;
+    --glass-border: 220 13% 85%;
+    --glass-blur: 20px;
     --glass-shine: 0 0% 100% / 0.5;
     
     /* Elevated glass */
-    --glass-elevated-bg: 0 0% 100% / 0.95;
-    --glass-elevated-border: 220 13% 85% / 0.8;
+    --glass-elevated-bg: 0 0% 100%;
+    --glass-elevated-border: 220 13% 88%;
     
     /* Inset/sunken glass */
-    --glass-inset-bg: 220 14% 94% / 0.6;
-    --glass-inset-border: 220 13% 82% / 0.4;
+    --glass-inset-bg: 220 14% 96%;
+    --glass-inset-border: 220 13% 88%;
 
     /* Shadows - subtle for light mode */
     --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.03);
@@ -123,19 +123,19 @@
     --apple-pink: 330 81% 65%;
     --apple-yellow: 45 93% 55%;
 
-    /* Glass tokens - dark mode (main focus) */
-    --glass-bg: 222 47% 11% / 0.7;
-    --glass-border: 215 27% 25% / 0.5;
-    --glass-blur: 32px;
+    /* Glass tokens - dark mode (solid backgrounds for readability) */
+    --glass-bg: 222 47% 11%;
+    --glass-border: 215 27% 20%;
+    --glass-blur: 20px;
     --glass-shine: 215 27% 40% / 0.1;
 
-    /* Elevated glass - popover/dropdown style */
-    --glass-elevated-bg: 222 47% 12% / 0.95;
-    --glass-elevated-border: 215 27% 28% / 0.6;
+    /* Elevated glass - popover/dropdown style (fully opaque) */
+    --glass-elevated-bg: 222 47% 11%;
+    --glass-elevated-border: 215 27% 22%;
     
     /* Inset/sunken - for inputs, nested cards */
-    --glass-inset-bg: 222 47% 6% / 0.5;
-    --glass-inset-border: 215 27% 15% / 0.4;
+    --glass-inset-bg: 222 47% 8%;
+    --glass-inset-border: 215 27% 18%;
 
     /* Shadows - more dramatic for dark mode */
     --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.3);
@@ -188,26 +188,22 @@
 }
 
 @layer utilities {
-  /* Base glass utility */
+  /* Base glass utility - solid background */
   .glass {
-    background: hsl(var(--glass-bg));
-    backdrop-filter: blur(var(--glass-blur));
-    -webkit-backdrop-filter: blur(var(--glass-blur));
+    background-color: hsl(var(--glass-bg));
     border: 1px solid hsl(var(--glass-border));
   }
 
-  /* Elevated glass - for popovers, dropdowns, dialogs */
+  /* Elevated glass - for popovers, dropdowns, dialogs (fully opaque) */
   .glass-elevated {
-    background: hsl(var(--glass-elevated-bg));
-    backdrop-filter: blur(var(--glass-blur));
-    -webkit-backdrop-filter: blur(var(--glass-blur));
+    background-color: hsl(var(--glass-elevated-bg));
     border: 1px solid hsl(var(--glass-elevated-border));
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow-xl);
   }
 
   /* Inset glass - for nested elements, inputs */
   .glass-inset {
-    background: hsl(var(--glass-inset-bg));
+    background-color: hsl(var(--glass-inset-bg));
     border: 1px solid hsl(var(--glass-inset-border));
   }
 
