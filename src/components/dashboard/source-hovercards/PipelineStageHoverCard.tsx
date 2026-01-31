@@ -379,28 +379,32 @@ export function PipelineStageHoverCard({
       <HoverCardTrigger asChild>
         {children}
       </HoverCardTrigger>
-      <HoverCardContent 
-        align="center" 
-        className="w-80 bg-popover/95 backdrop-blur-md border-border/50"
-      >
-        <div className="space-y-3">
+      <HoverCardContent align="center" className="w-80">
+        <div className="space-y-4">
+          {/* Header */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Icon className={`h-4 w-4 ${color}`} />
-              <h4 className="text-sm font-semibold text-foreground">{label}: {progress}%</h4>
+            <div className="flex items-center gap-2.5">
+              <div className={`p-2 rounded-lg bg-current/10 ${color}`}>
+                <Icon className="h-4 w-4" />
+              </div>
+              <h4 className="text-sm font-semibold text-foreground">{label}</h4>
             </div>
+            <span className={`text-sm font-bold ${color}`}>{progress}%</span>
           </div>
 
-          <div className="pb-2">
-            <Progress value={progress} className="h-1.5" />
-          </div>
+          {/* Progress bar */}
+          <Progress value={progress} className="h-2" />
 
-          <div className="border-t border-border/30 pt-2">
-            <p className="text-[10px] text-muted-foreground mb-3 italic">
-              {description}
-            </p>
-            {contentMap[stage]}
-          </div>
+          {/* Description */}
+          <p className="text-[11px] text-muted-foreground italic leading-relaxed">
+            {description}
+          </p>
+
+          {/* Separator */}
+          <div className="separator-line" />
+
+          {/* Stage-specific content */}
+          {contentMap[stage]}
         </div>
       </HoverCardContent>
     </HoverCard>

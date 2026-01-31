@@ -43,72 +43,83 @@ export function DocsCountPopover({ totalDocs, breakdown, children }: DocsCountPo
       <PopoverTrigger asChild>
         {children}
       </PopoverTrigger>
-      <PopoverContent 
-        align="end" 
-        className="w-80 bg-popover/95 backdrop-blur-md border-border/50"
-      >
+      <PopoverContent align="end" className="w-80">
         <div className="space-y-4">
-          <div className="flex items-center gap-2">
-            <FileText className="h-4 w-4 text-primary" />
+          {/* Header */}
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-primary/10">
+              <FileText className="h-4 w-4 text-primary" />
+            </div>
             <h4 className="text-sm font-semibold text-foreground">
               {totalDocs.toLocaleString()} Documentos
             </h4>
           </div>
 
+          {/* Separator */}
+          <div className="separator-line" />
+
           {/* Status breakdown */}
-          <div className="space-y-2">
-            <p className="text-xs font-medium text-muted-foreground">Por status:</p>
+          <div className="space-y-3">
+            <p className="text-xs font-medium text-muted-foreground">Por status</p>
             
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-1.5">
-                  <CheckCircle className="h-3 w-3 text-apple-green" />
-                  <span>Processados</span>
+            <div className="space-y-2.5">
+              {/* Processed */}
+              <div className="glass-inset rounded-xl p-3 space-y-2">
+                <div className="flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-3.5 w-3.5 text-apple-green" />
+                    <span className="text-foreground">Processados</span>
+                  </div>
+                  <span className="tabular-nums text-muted-foreground">
+                    {stats.processed.toLocaleString()} ({processedPercent}%)
+                  </span>
                 </div>
-                <span className="tabular-nums text-muted-foreground">
-                  {stats.processed.toLocaleString()} ({processedPercent}%)
-                </span>
+                <Progress value={processedPercent} className="h-1.5" />
               </div>
-              <Progress value={processedPercent} className="h-1.5" />
-            </div>
 
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-1.5">
-                  <Clock className="h-3 w-3 text-apple-orange" />
-                  <span>Em fila</span>
+              {/* Queued */}
+              <div className="glass-inset rounded-xl p-3 space-y-2">
+                <div className="flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-3.5 w-3.5 text-apple-orange" />
+                    <span className="text-foreground">Em fila</span>
+                  </div>
+                  <span className="tabular-nums text-muted-foreground">
+                    {stats.queued.toLocaleString()} ({queuedPercent}%)
+                  </span>
                 </div>
-                <span className="tabular-nums text-muted-foreground">
-                  {stats.queued.toLocaleString()} ({queuedPercent}%)
-                </span>
+                <Progress value={queuedPercent} className="h-1.5 [&>div]:bg-apple-orange" />
               </div>
-              <Progress value={queuedPercent} className="h-1.5 [&>div]:bg-apple-orange" />
-            </div>
 
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-1.5">
-                  <AlertCircle className="h-3 w-3 text-destructive" />
-                  <span>Com erro</span>
+              {/* Errored */}
+              <div className="glass-inset rounded-xl p-3 space-y-2">
+                <div className="flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-2">
+                    <AlertCircle className="h-3.5 w-3.5 text-destructive" />
+                    <span className="text-foreground">Com erro</span>
+                  </div>
+                  <span className="tabular-nums text-muted-foreground">
+                    {stats.errored.toLocaleString()} ({erroredPercent}%)
+                  </span>
                 </div>
-                <span className="tabular-nums text-muted-foreground">
-                  {stats.errored.toLocaleString()} ({erroredPercent}%)
-                </span>
+                <Progress value={erroredPercent} className="h-1.5 [&>div]:bg-destructive" />
               </div>
-              <Progress value={erroredPercent} className="h-1.5 [&>div]:bg-destructive" />
             </div>
           </div>
 
+          {/* Separator */}
+          <div className="separator-line" />
+
           {/* Year breakdown */}
-          <div className="border-t border-border/30 pt-3 space-y-1.5">
-            <p className="text-xs font-medium text-muted-foreground">Por ano:</p>
-            <div className="grid grid-cols-3 gap-2 text-xs">
+          <div className="space-y-2.5">
+            <p className="text-xs font-medium text-muted-foreground">Por ano</p>
+            <div className="grid grid-cols-3 gap-2">
               {Object.entries(byYear)
                 .sort(([a], [b]) => Number(b) - Number(a))
                 .map(([year, count]) => (
-                  <div key={year} className="text-center p-2 rounded-md bg-muted/50">
-                    <div className="font-medium">{year}</div>
-                    <div className="text-muted-foreground tabular-nums">
+                  <div key={year} className="text-center p-2.5 rounded-xl glass-inset">
+                    <div className="text-xs font-medium text-foreground">{year}</div>
+                    <div className="text-[10px] text-muted-foreground tabular-nums mt-0.5">
                       {count.toLocaleString()}
                     </div>
                   </div>
@@ -116,19 +127,22 @@ export function DocsCountPopover({ totalDocs, breakdown, children }: DocsCountPo
             </div>
           </div>
 
+          {/* Separator */}
+          <div className="separator-line" />
+
           {/* Size info */}
-          <div className="border-t border-border/30 pt-3 flex items-center justify-between text-xs text-muted-foreground">
-            <div className="flex items-center gap-1.5">
-              <HardDrive className="h-3 w-3" />
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <HardDrive className="h-3.5 w-3.5" />
               <span>Total: {breakdown?.totalSize || "3.2 GB"}</span>
             </div>
             <span>Média: {breakdown?.avgSize || "2.6 MB"}/doc</span>
           </div>
 
           {/* Action */}
-          <Button variant="ghost" size="sm" className="w-full text-xs h-8 gap-1.5">
+          <Button variant="secondary" size="sm" className="w-full text-xs h-9 gap-2 rounded-xl">
             Ver todos os documentos
-            <ExternalLink className="h-3 w-3" />
+            <ExternalLink className="h-3.5 w-3.5" />
           </Button>
         </div>
       </PopoverContent>

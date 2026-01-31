@@ -49,18 +49,20 @@ export function RAGStatusWidget({
     <TooltipProvider delayDuration={200}>
       <div
         className={cn(
-          "bg-card rounded-2xl p-5 border border-border/50 shadow-apple",
+          "glass rounded-2xl p-5",
           className
         )}
       >
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <Database className="h-4 w-4 text-primary" />
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-xl glass-inset">
+              <Database className="h-4 w-4 text-primary" />
+            </div>
             <h3 className="text-sm font-semibold text-foreground">RAG System</h3>
           </div>
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="flex items-center gap-2 cursor-help">
+              <div className="flex items-center gap-2 cursor-help px-2.5 py-1 rounded-lg glass-inset">
                 <span className={cn("w-2 h-2 rounded-full animate-pulse-dot", config.dotColor)} />
                 <span className={cn("text-xs font-medium", config.textColor)}>
                   {config.label}
@@ -73,11 +75,11 @@ export function RAGStatusWidget({
           </Tooltip>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-1">
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="flex items-center justify-between py-2 border-b border-border/50 cursor-help">
-                <div className="flex items-center gap-2 text-muted-foreground">
+              <div className="flex items-center justify-between py-3 cursor-help">
+                <div className="flex items-center gap-2.5 text-muted-foreground">
                   <Zap className="h-3.5 w-3.5" />
                   <span className="text-xs">Vector Chunks</span>
                 </div>
@@ -91,10 +93,12 @@ export function RAGStatusWidget({
             </TooltipContent>
           </Tooltip>
 
+          <div className="separator-line" />
+
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="flex items-center justify-between py-2 border-b border-border/50 cursor-help">
-                <div className="flex items-center gap-2 text-muted-foreground">
+              <div className="flex items-center justify-between py-3 cursor-help">
+                <div className="flex items-center gap-2.5 text-muted-foreground">
                   <HardDrive className="h-3.5 w-3.5" />
                   <span className="text-xs">Index Size</span>
                 </div>
@@ -108,10 +112,12 @@ export function RAGStatusWidget({
             </TooltipContent>
           </Tooltip>
 
+          <div className="separator-line" />
+
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="flex items-center justify-between py-2 cursor-help">
-                <div className="flex items-center gap-2 text-muted-foreground">
+              <div className="flex items-center justify-between py-3 cursor-help">
+                <div className="flex items-center gap-2.5 text-muted-foreground">
                   <Clock className="h-3.5 w-3.5" />
                   <span className="text-xs">Last Sync</span>
                 </div>
