@@ -1,265 +1,435 @@
 
-# Plano de Melhorias UI/UX - Dashboard GABI
+
+# Plano: Sneakpeeks Interativos na Sources Pipeline Table
 
 ## Visao Geral
 
-Este plano aborda as 7 oportunidades de melhoria que voce identificou, priorizando as de alta severidade primeiro. A implementacao mantara o estilo Apple que ja esta no projeto.
+Adicionar popups/hovercards informativos em cada elemento clicavel da tabela de sources, transformando-a de uma visualizacao passiva em uma ferramenta de exploracao interativa.
 
 ---
 
-## Fase 1: Layout Condensado + Quick Status (Prioridade Alta)
+## Mapeamento de Cliques e Conteudos
 
-### 1.1 Novo Componente QuickStatusBar
+### 1. Clique no Nome da Source (ex: "Product Documentation")
 
-Criar uma barra de status compacta no topo do dashboard que mostra o estado geral do sistema em uma linha:
+**Tipo de interacao:** HoverCard (aparece ao passar mouse) + Click abre Dialog completo
 
+**Conteudo do HoverCard (preview rapido):**
 ```text
-+---------------------------------------------------------------+
-| STATUS SYNC              | ELASTICSEARCH           | TEMPO    |
-| [*] 12/14 Synced         | [*] Online             | ETA: 28m |
-| [.] 2 Pending            | 542K docs indexed      | 12.5K/m  |
-| [x] 0 Failed             | Response: 142ms        |          |
-+---------------------------------------------------------------+
++----------------------------------------+
+| Product Documentation                   |
+| ----------------------------------------|
+| Descricao: PDFs de manuais de produto  |
+| Criado em: 15 Jan 2024                 |
+| Ultima atualizacao: 2h atras           |
+| Owner: equipe-docs@empresa.com         |
+| Tags: [manual] [produto] [v2.0]        |
++----------------------------------------+
 ```
 
-**Arquivos a criar:**
-- `src/components/dashboard/QuickStatusBar.tsx`
-
-**Caracteristicas:**
-- Cards ultra-compactos com dots coloridos de status
-- Layout horizontal em grid (3 colunas no desktop, empilhado no mobile)
-- Animacao sutil no dot quando status muda
-
-### 1.2 Refatorar MetricCards para Versao Compacta
-
-Modificar o componente `MetricCard` para ter uma variante `compact`:
-
-**Arquivos a modificar:**
-- `src/components/dashboard/MetricCard.tsx`
-
-**Mudancas:**
-- Adicionar prop `variant?: "default" | "compact"`
-- Versao compact: ~50% menor, sem subtitle, numero + label inline
+**Conteudo do Dialog (clique para detalhes):**
+- Configuracoes da source (URL, credenciais mascaradas)
+- Historico de syncs (ultimos 10)
+- Grafico de crescimento de documentos ao longo do tempo
+- Botoes: [Editar] [Sync Agora] [Pausar] [Deletar]
 
 ---
 
-## Fase 2: Dark Mode + Tema (Prioridade Alta)
+### 2. Clique no Badge de Tipo (Database, PDF, API, Website)
 
-### 2.1 Implementar Toggle de Tema
+**Tipo de interacao:** HoverCard informativo
 
-O projeto ja tem as variaveis CSS para dark mode definidas em `index.css`. Precisa:
+**Conteudo por tipo:**
 
-**Arquivos a modificar:**
-- `src/components/dashboard/DashboardHeader.tsx` - Tornar o botao Sun/Moon funcional
-
-**Arquivos a criar:**
-- `src/hooks/useTheme.ts` - Hook para gerenciar tema (localStorage + class toggle)
-
-**Implementacao:**
+**Database:**
 ```text
-1. useTheme hook:
-   - Le preferencia do localStorage ou system preference
-   - Aplica classe "dark" no documentElement
-   - Persiste mudancas
-
-2. DashboardHeader:
-   - Importar useTheme
-   - Toggle entre Sun/Moon icons
-   - Animacao suave na transicao
++----------------------------------------+
+| Tipo: Database                          |
+| ----------------------------------------|
+| Conexao: PostgreSQL                    |
+| Host: db.empresa.com:5432              |
+| Schema: public                          |
+| Tabelas monitoradas: 12                |
+| Query padrao: SELECT * FROM docs...    |
+| Refresh rate: a cada 15 min            |
++----------------------------------------+
 ```
 
----
-
-## Fase 3: Feedback de Erros (Prioridade Alta)
-
-### 3.1 Componente SystemHealthBanner
-
-Criar banner persistente no topo quando ha problemas de conectividade:
-
-**Arquivos a criar:**
-- `src/components/dashboard/SystemHealthBanner.tsx`
-
+**PDF:**
 ```text
-+---------------------------------------------------------------+
-| [!] ELASTICSEARCH OFFLINE                                      |
-|     Search functionality disabled. Last check: 2 min ago       |
-|                                        [Retry] [View Details]  |
-+---------------------------------------------------------------+
++----------------------------------------+
+| Tipo: PDF Documents                     |
+| ----------------------------------------|
+| Storage: S3 bucket (docs-bucket)       |
+| Formatos aceitos: .pdf, .docx          |
+| OCR habilitado: Sim                    |
+| Idiomas detectados: PT, EN             |
+| Tamanho medio: 2.4 MB                  |
++----------------------------------------+
 ```
 
-**Caracteristicas:**
-- Cores semanticas: vermelho (offline), amarelo (degraded), verde (dismiss)
-- Botao Retry com loading state
-- Auto-dismiss apos reconexao
-- Animacao slide-down ao aparecer
-
-### 3.2 Criar Context de Health Status
-
-**Arquivos a criar:**
-- `src/contexts/SystemHealthContext.tsx`
-
-**Funcionalidades:**
-- Estado centralizado de saude dos servicos
-- Polling opcional (desabilitado por padrao, mock para demo)
-- Metodos: `checkHealth()`, `dismissAlert()`
-
----
-
-## Fase 4: Empty States + Tooltips (Prioridade Media)
-
-### 4.1 Componente EmptyState Reutilizavel
-
-**Arquivos a criar:**
-- `src/components/ui/empty-state.tsx`
-
+**API:**
 ```text
-+---------------------------+
-|                           |
-|     [   Icon   ]          |
-|     No Data Yet           |
-|     Description text      |
-|     [Action Button]       |
-|                           |
-+---------------------------+
++----------------------------------------+
+| Tipo: REST API                          |
+| ----------------------------------------|
+| Endpoint: api.tribunal.gov.br/v2       |
+| Metodo: GET com paginacao              |
+| Auth: Bearer Token (valido)            |
+| Rate limit: 100 req/min                |
+| Ultimo health check: OK (142ms)        |
++----------------------------------------+
 ```
 
-**Props:**
-- `icon`, `title`, `description`, `action`, `actionLabel`
-
-### 4.2 Adicionar Tooltips nos Status Badges
-
-**Arquivos a modificar:**
-- `src/components/dashboard/PipelineStage.tsx`
-- `src/components/dashboard/SourcesTable.tsx`
-- `src/components/dashboard/RAGStatusWidget.tsx`
-
-**Implementacao:**
-- Envolver badges de status com `<Tooltip>`
-- Conteudo: explicacao + timestamp (ex: "All documents synced - Last: 2h ago")
-
----
-
-## Fase 5: Real-Time Updates (Prioridade Media)
-
-### 5.1 Hook para WebSocket/Polling
-
-**Arquivos a criar:**
-- `src/hooks/useRealtimeData.ts`
-
-**Caracteristicas:**
-- Suporte a WebSocket (quando disponivel) ou fallback para polling
-- Auto-reconnect com backoff exponencial
-- Estado: `connected`, `reconnecting`, `disconnected`
-- Mock mode para desenvolvimento
-
-### 5.2 Indicador de Conexao em Tempo Real
-
-**Arquivos a modificar:**
-- `src/components/dashboard/DashboardHeader.tsx`
-
-**Adicionar:**
-- Dot verde/amarelo/vermelho indicando status da conexao real-time
-- Tooltip com "Connected" / "Reconnecting..." / "Offline"
-
----
-
-## Fase 6: Tabelas Responsivas Melhoradas (Prioridade Alta)
-
-### 6.1 Refatorar SourcesTable
-
-A tabela atual ja tem versao mobile (cards), mas precisa:
-
-**Arquivos a modificar:**
-- `src/components/dashboard/SourcesTable.tsx`
-
-**Melhorias:**
-- Adicionar horizontal scroll indicator no mobile
-- Sticky header na versao desktop
-- Hover state mais pronunciado
-- Opcao de ordenacao por coluna (sort icons)
-- Skeleton loading individual por linha
-
----
-
-## Fase 7: Activity Feed (Nova Feature)
-
-### 7.1 Componente RecentActivityFeed
-
-Criar feed de atividades recentes como mostrado no prototipo:
-
-**Arquivos a criar:**
-- `src/components/dashboard/RecentActivityFeed.tsx`
-
+**Website:**
 ```text
-+-- RECENT ACTIVITY ----------------------------------+
-| [*] 2h ago   tcu_acordaos   synced 5.2K docs       |
-| [@] 15m ago  tcu_normas     syncing...             |
-| [!] 45m ago  tcu_sumulas    2 errors (retry)       |
-+----------------------------------------------------+
-```
-
-**Caracteristicas:**
-- Timeline vertical compacta
-- Icons/cores por tipo de evento
-- Animacao de entrada para novos eventos
-- Link para detalhes de cada evento
-
----
-
-## Estrutura de Arquivos Final
-
-```text
-src/
-  components/
-    dashboard/
-      QuickStatusBar.tsx       <- NOVO
-      SystemHealthBanner.tsx   <- NOVO
-      RecentActivityFeed.tsx   <- NOVO
-      MetricCard.tsx           <- MODIFICAR (add compact variant)
-      PipelineStage.tsx        <- MODIFICAR (add tooltips)
-      SourcesTable.tsx         <- MODIFICAR (melhorias responsivas)
-      RAGStatusWidget.tsx      <- MODIFICAR (add tooltips)
-      DashboardHeader.tsx      <- MODIFICAR (theme toggle funcional)
-    ui/
-      empty-state.tsx          <- NOVO
-  contexts/
-    SystemHealthContext.tsx    <- NOVO
-  hooks/
-    useTheme.ts                <- NOVO
-    useRealtimeData.ts         <- NOVO
-  pages/
-    Index.tsx                  <- MODIFICAR (integrar novos componentes)
++----------------------------------------+
+| Tipo: Web Crawler                       |
+| ----------------------------------------|
+| URL base: docs.empresa.com             |
+| Profundidade: 3 niveis                 |
+| Paginas descobertas: 523               |
+| Robots.txt: Respeitado                 |
+| Ultimo crawl: 1h atras                 |
++----------------------------------------+
 ```
 
 ---
 
-## Ordem de Implementacao
+### 3. Clique na Contagem de Docs (ex: "1,247")
 
-1. **useTheme + Dark Mode** - Rapido, alto impacto visual
-2. **QuickStatusBar** - Condensa informacao, menos scroll
-3. **SystemHealthBanner + Context** - Feedback de erros
-4. **Empty State component** - Reutilizavel em varios lugares
-5. **Tooltips nos badges** - Melhora UX com pouco codigo
-6. **RecentActivityFeed** - Nova feature de alto valor
-7. **SourcesTable melhorias** - Polimento final
-8. **useRealtimeData** - Preparacao para integracao com backend
+**Tipo de interacao:** Popover com breakdown
+
+**Conteudo:**
+```text
++----------------------------------------+
+| 1,247 Documentos                        |
+| ----------------------------------------|
+| Por status:                             |
+|   [====] 1,102 Processados (88%)       |
+|   [==  ]   98 Em fila (8%)             |
+|   [x   ]   47 Com erro (4%)            |
+| ----------------------------------------|
+| Por ano:                                |
+|   2024: 456 docs                        |
+|   2023: 512 docs                        |
+|   2022: 279 docs                        |
+| ----------------------------------------|
+| Tamanho total: 3.2 GB                  |
+| Media por doc: 2.6 MB                  |
+| ----------------------------------------|
+| [Ver todos os documentos ->]           |
++----------------------------------------+
+```
+
+---
+
+### 4. Clique em Discovery (barra de progresso)
+
+**Tipo de interacao:** HoverCard com metricas
+
+**Conteudo:**
+```text
++----------------------------------------+
+| Discovery: 100%                         |
+| ----------------------------------------|
+| O que e: Identificacao de novos docs   |
+|          no source original            |
+| ----------------------------------------|
+| Arquivos encontrados: 1,247            |
+| Novos desde ultimo scan: +23           |
+| Removidos/movidos: -5                  |
+| Proximo scan: em 14 min                |
+| ----------------------------------------|
+| Metodo: Listagem S3 + delta compare    |
+| Tempo do ultimo scan: 12s              |
++----------------------------------------+
+```
+
+---
+
+### 5. Clique em Sync (barra de progresso)
+
+**Tipo de interacao:** HoverCard + Progress detalhado
+
+**Conteudo:**
+```text
++----------------------------------------+
+| Sync: 95%                               |
+| ----------------------------------------|
+| O que e: Download dos arquivos para    |
+|          armazenamento local           |
+| ----------------------------------------|
+| Sincronizados: 1,184 / 1,247           |
+| Pendentes: 63                           |
+| Velocidade: 12.5 MB/s                  |
+| ETA: ~8 minutos                        |
+| ----------------------------------------|
+| Erros de sync: 2                        |
+|   - doc_4521.pdf (timeout)             |
+|   - doc_8832.pdf (404)                 |
+| [Retry erros]                          |
++----------------------------------------+
+```
+
+---
+
+### 6. Clique em Processing (barra de progresso)
+
+**Tipo de interacao:** HoverCard com detalhes de processamento
+
+**Conteudo:**
+```text
++----------------------------------------+
+| Processing: 85%                         |
+| ----------------------------------------|
+| O que e: Extracao de texto, parsing,   |
+|          limpeza e chunking            |
+| ----------------------------------------|
+| Processados: 1,060 / 1,247             |
+| Em processamento agora: 12             |
+| Na fila: 175                           |
+| ----------------------------------------|
+| Breakdown por etapa:                    |
+|   Extracao texto: 1,180 OK             |
+|   OCR aplicado: 342 docs               |
+|   Chunking: 1,060 (avg 8 chunks/doc)   |
+| ----------------------------------------|
+| Erros: 7 docs com parse failed         |
+| [Ver erros de processamento]           |
++----------------------------------------+
+```
+
+---
+
+### 7. Clique em Indexing (barra de progresso)
+
+**Tipo de interacao:** HoverCard com status Elasticsearch
+
+**Conteudo:**
+```text
++----------------------------------------+
+| Indexing: 72%                           |
+| ----------------------------------------|
+| O que e: Insercao no Elasticsearch     |
+|          para busca full-text          |
+| ----------------------------------------|
+| Documentos indexados: 898 / 1,247      |
+| Chunks indexados: 7,184                |
+| Index: gabi_docs_prod                  |
+| ----------------------------------------|
+| Performance:                            |
+|   Bulk rate: 500 docs/batch            |
+|   Tempo medio: 45ms/batch              |
+|   Tamanho do index: 892 MB             |
+| ----------------------------------------|
+| Health: [verde] Cluster OK              |
+| [Abrir Elasticsearch Dashboard]        |
++----------------------------------------+
+```
+
+---
+
+### 8. Clique em Embedding (barra de progresso)
+
+**Tipo de interacao:** HoverCard com detalhes de vetorizacao
+
+**Conteudo:**
+```text
++----------------------------------------+
+| Embedding: 68%                          |
+| ----------------------------------------|
+| O que e: Geracao de vetores para       |
+|          busca semantica (RAG)         |
+| ----------------------------------------|
+| Chunks vetorizados: 5,432 / 7,988      |
+| Modelo: text-embedding-ada-002         |
+| Dimensoes: 1536                         |
+| ----------------------------------------|
+| Performance:                            |
+|   Rate: 150 chunks/min                 |
+|   Custo estimado: $0.12                |
+|   ETA: 17 minutos                      |
+| ----------------------------------------|
+| Vector DB: Qdrant (collection: gabi)   |
+| Tamanho: 412 MB                         |
+| [Abrir Qdrant Dashboard]               |
++----------------------------------------+
+```
+
+---
+
+## Arquivos a Criar
+
+### `src/components/dashboard/SourceDetailDialog.tsx`
+Modal completo com todas as informacoes da source, aberto ao clicar no nome.
+
+### `src/components/dashboard/source-hovercards/`
+Pasta com componentes de hovercard especializados:
+- `SourceNameHoverCard.tsx`
+- `SourceTypeHoverCard.tsx`
+- `DocsCountPopover.tsx`
+- `PipelineStageHoverCard.tsx` (reutilizavel para Discovery, Sync, Processing, Indexing, Embedding)
+
+---
+
+## Arquivos a Modificar
+
+### `src/components/dashboard/SourcesTable.tsx`
+- Importar novos componentes de hovercard
+- Envolver cada elemento clicavel com o respectivo trigger
+- Adicionar estado para controlar Dialog de detalhes
+
+### `src/pages/Index.tsx`
+- Expandir mock data com campos adicionais para popular os hovercards
+
+---
+
+## Interface de Dados Expandida
+
+```typescript
+interface SourceExtended {
+  // Campos existentes
+  id: string;
+  name: string;
+  type: "pdf" | "database" | "website" | "api";
+  documents: number;
+  discovery: number;
+  sync: number;
+  processing: number;
+  indexing: number;
+  embedding: number;
+  
+  // Novos campos para hovercards
+  description?: string;
+  createdAt?: Date;
+  lastUpdated?: Date;
+  owner?: string;
+  tags?: string[];
+  
+  // Config por tipo
+  typeConfig?: {
+    // Database
+    dbType?: string;
+    host?: string;
+    schema?: string;
+    tablesMonitored?: number;
+    
+    // PDF
+    storage?: string;
+    ocrEnabled?: boolean;
+    avgFileSize?: string;
+    
+    // API
+    endpoint?: string;
+    authType?: string;
+    rateLimit?: string;
+    
+    // Website
+    baseUrl?: string;
+    crawlDepth?: number;
+    respectRobots?: boolean;
+  };
+  
+  // Metricas detalhadas por stage
+  stageDetails?: {
+    discovery?: {
+      filesFound: number;
+      newSinceLastScan: number;
+      removed: number;
+      nextScan: string;
+      scanDuration: string;
+    };
+    sync?: {
+      synced: number;
+      pending: number;
+      speed: string;
+      eta: string;
+      errors: Array<{ file: string; reason: string }>;
+    };
+    processing?: {
+      processed: number;
+      inProgress: number;
+      queued: number;
+      ocrApplied: number;
+      avgChunksPerDoc: number;
+      errors: number;
+    };
+    indexing?: {
+      indexed: number;
+      chunksIndexed: number;
+      indexName: string;
+      bulkRate: string;
+      indexSize: string;
+    };
+    embedding?: {
+      embedded: number;
+      totalChunks: number;
+      model: string;
+      dimensions: number;
+      rate: string;
+      estimatedCost: string;
+      eta: string;
+      vectorDbSize: string;
+    };
+  };
+  
+  // Docs breakdown
+  docsBreakdown?: {
+    byStatus: {
+      processed: number;
+      queued: number;
+      errored: number;
+    };
+    byYear: Record<string, number>;
+    totalSize: string;
+    avgSize: string;
+  };
+}
+```
+
+---
+
+## Comportamento de Interacao
+
+| Elemento | Hover | Click |
+|----------|-------|-------|
+| Nome | HoverCard preview | Abre Dialog completo |
+| Type Badge | HoverCard config | - |
+| Docs Count | - | Popover breakdown |
+| Discovery | HoverCard metricas | - |
+| Sync | HoverCard metricas | - |
+| Processing | HoverCard metricas | - |
+| Indexing | HoverCard metricas | - |
+| Embedding | HoverCard metricas | - |
+
+---
+
+## Estilo Visual
+
+- Usar `HoverCard` do Radix para previews rapidos (aparecem ao hover)
+- Usar `Popover` para docs breakdown (clique necessario, mais conteudo)
+- Usar `Dialog` para visao completa da source
+- Manter estilo Apple com glassmorphism sutil
+- Animacoes suaves de entrada (fade-in, scale)
+- Cores consistentes com o color scheme de cada stage
 
 ---
 
 ## Secao Tecnica
 
-### Dependencias
-Nenhuma nova dependencia necessaria - todas as ferramentas ja estao no projeto:
-- `next-themes` (instalado, mas nao usado - alternativa: criar useTheme proprio)
-- Radix UI Tooltip (ja instalado)
-- Tailwind classes para dark mode (ja configurado)
+### Componentes Radix UI utilizados
+- `HoverCard` - para previews informativos no hover
+- `Popover` - para breakdown de docs (clique)
+- `Dialog` - para detalhes completos da source
 
-### Padroes a Seguir
-- Manter uso de CSS variables para cores
-- Usar `cn()` utility para class merging
-- Componentes com `className` prop para customizacao
-- Animacoes usando classes `transition-apple` existentes
-- Mobile-first: todas as novas features responsivas
+### Performance
+- Lazy loading do conteudo dos hovercards
+- Delay de 200ms antes de mostrar (evita flicker)
+- Portal rendering para evitar overflow issues
 
-### Mock Data
-Todos os componentes usarao mock data por padrao, com props opcionais para dados reais quando o backend estiver pronto.
+### Acessibilidade
+- Todos os triggers terao `aria-describedby`
+- Conteudo dos hovercards sera lido por screen readers
+- Navegacao por teclado funcionara (Tab + Enter)
+
