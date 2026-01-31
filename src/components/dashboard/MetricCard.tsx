@@ -66,14 +66,13 @@ export function MetricCard({
     return (
       <div
         className={cn(
-          "relative bg-card rounded-xl p-3 shadow-apple-sm transition-apple",
+          "relative glass rounded-xl p-3 transition-apple",
           "hover:shadow-apple hover:-translate-y-0.5",
-          "border border-border/50",
           className
         )}
       >
         <div className="flex items-center gap-3">
-          <div className={cn("p-1.5 rounded-lg flex-shrink-0", colors.iconBg)}>
+          <div className={cn("p-2 rounded-xl flex-shrink-0 glass-inset", colors.iconBg)}>
             <div className={colors.iconColor}>{icon}</div>
           </div>
           <div className="flex-1 min-w-0">
@@ -82,7 +81,7 @@ export function MetricCard({
               {trend && (
                 <span
                   className={cn(
-                    "text-[10px] font-medium px-1.5 py-0.5 rounded-full flex-shrink-0",
+                    "text-[10px] font-medium px-2 py-0.5 rounded-lg flex-shrink-0",
                     trend.isPositive
                       ? "bg-apple-green/10 text-apple-green"
                       : "bg-apple-red/10 text-apple-red"
@@ -98,8 +97,8 @@ export function MetricCard({
           </div>
         </div>
         {progress !== undefined && (
-          <div className="mt-2">
-            <div className={cn("h-1 rounded-full overflow-hidden", colors.progressBg)}>
+          <div className="mt-3">
+            <div className={cn("h-1.5 rounded-full overflow-hidden glass-inset")}>
               <div
                 className={cn("h-full rounded-full transition-all duration-700 ease-out", colors.progressFill)}
                 style={{ width: `${Math.min(progress, 100)}%` }}
@@ -115,23 +114,22 @@ export function MetricCard({
   return (
     <div
       className={cn(
-        "relative bg-card rounded-2xl p-4 sm:p-5 shadow-apple transition-apple",
+        "relative glass rounded-2xl p-4 sm:p-5 transition-apple",
         "hover:shadow-apple-lg hover:-translate-y-0.5",
-        "border border-border/50",
         className
       )}
     >
       <div className="flex items-start justify-between mb-3 sm:mb-4">
-        <div className={cn("p-2 sm:p-2.5 rounded-xl", colors.iconBg)}>
+        <div className={cn("p-2.5 sm:p-3 rounded-xl glass-inset", colors.iconBg)}>
           <div className={colors.iconColor}>{icon}</div>
         </div>
         {trend && (
           <span
             className={cn(
-              "text-[10px] sm:text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full",
+              "text-[10px] sm:text-xs font-semibold px-2 sm:px-2.5 py-1 rounded-lg",
               trend.isPositive
-                ? "bg-apple-green/10 text-apple-green"
-                : "bg-apple-red/10 text-apple-red"
+                ? "bg-apple-green/15 text-apple-green"
+                : "bg-apple-red/15 text-apple-red"
             )}
           >
             {trend.isPositive ? "+" : ""}
@@ -142,7 +140,7 @@ export function MetricCard({
 
       <div className="space-y-0.5 sm:space-y-1">
         <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate">{title}</p>
-        <p className="text-xl sm:text-2xl font-semibold tracking-tight text-foreground">
+        <p className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
           {value}
         </p>
         {subtitle && (
@@ -151,14 +149,14 @@ export function MetricCard({
       </div>
 
       {progress !== undefined && (
-        <div className="mt-3 sm:mt-4">
-          <div className={cn("h-1.5 rounded-full overflow-hidden", colors.progressBg)}>
+        <div className="mt-4 sm:mt-5">
+          <div className={cn("h-2 rounded-full overflow-hidden glass-inset")}>
             <div
               className={cn("h-full rounded-full transition-all duration-700 ease-out", colors.progressFill)}
               style={{ width: `${Math.min(progress, 100)}%` }}
             />
           </div>
-          <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 sm:mt-1.5">
+          <p className="text-[10px] sm:text-xs text-muted-foreground mt-2">
             {progress.toFixed(1)}% complete
           </p>
         </div>

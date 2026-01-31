@@ -66,24 +66,24 @@ interface MiniProgressProps {
 
 const MiniProgressInner = forwardRef<HTMLDivElement, MiniProgressProps & React.HTMLAttributes<HTMLDivElement>>(
   ({ value, colorScheme, ...props }, ref) => {
-    const colors: Record<string, { bg: string; fill: string }> = {
-      blue: { bg: "bg-apple-blue/20", fill: "bg-apple-blue" },
-      green: { bg: "bg-apple-green/20", fill: "bg-apple-green" },
-      orange: { bg: "bg-apple-orange/20", fill: "bg-apple-orange" },
-      purple: { bg: "bg-apple-purple/20", fill: "bg-apple-purple" },
-      teal: { bg: "bg-apple-teal/20", fill: "bg-apple-teal" },
+    const colors: Record<string, { fill: string }> = {
+      blue: { fill: "bg-apple-blue" },
+      green: { fill: "bg-apple-green" },
+      orange: { fill: "bg-apple-orange" },
+      purple: { fill: "bg-apple-purple" },
+      teal: { fill: "bg-apple-teal" },
     };
     const c = colors[colorScheme] || colors.blue;
 
     return (
-      <div ref={ref} className="flex items-center gap-1.5 min-w-0 cursor-help" {...props}>
-        <div className={cn("flex-1 h-1.5 rounded-full overflow-hidden min-w-[40px]", c.bg)}>
+      <div ref={ref} className="flex items-center gap-2 min-w-0 cursor-help" {...props}>
+        <div className="flex-1 h-2 rounded-full overflow-hidden min-w-[40px] glass-inset">
           <div
             className={cn("h-full rounded-full transition-all duration-300", c.fill)}
             style={{ width: `${value}%` }}
           />
         </div>
-        <span className="text-[11px] text-muted-foreground w-8 text-right tabular-nums flex-shrink-0">
+        <span className="text-[11px] font-medium text-muted-foreground w-8 text-right tabular-nums flex-shrink-0">
           {value}%
         </span>
       </div>
@@ -129,7 +129,7 @@ function SourceCard({ source, onOpenDetail }: { source: Source; onOpenDetail: ()
   const Icon = typeIcons[source.type];
 
   return (
-    <div className="bg-card rounded-xl border border-border/50 p-4 shadow-apple-sm">
+    <div className="glass rounded-xl p-4">
       <div 
         className="flex items-center justify-between cursor-pointer"
         onClick={() => setExpanded(!expanded)}
@@ -314,7 +314,7 @@ export function SourcesTable({ sources, isLoading = false, className }: SourcesT
       </div>
 
       {/* Desktop: Table layout with sticky header */}
-      <div className="hidden lg:block bg-card rounded-2xl border border-border/50 shadow-apple overflow-hidden">
+      <div className="hidden lg:block glass rounded-2xl overflow-hidden">
         <div className="overflow-x-auto relative">
           {/* Scroll indicator gradient on right */}
           <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-card to-transparent pointer-events-none z-10" />

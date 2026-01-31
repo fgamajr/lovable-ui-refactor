@@ -174,19 +174,21 @@ export function SourceTypeHoverCard({ type, config, children }: SourceTypeHoverC
       <HoverCardTrigger asChild>
         {children}
       </HoverCardTrigger>
-      <HoverCardContent 
-        align="start" 
-        className="w-72 bg-popover/95 backdrop-blur-md border-border/50"
-      >
-        <div className="space-y-3">
-          <div className="flex items-center gap-2">
-            <Icon className="h-4 w-4 text-primary" />
+      <HoverCardContent align="start" className="w-72">
+        <div className="space-y-4">
+          {/* Header */}
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-lg bg-primary/10">
+              <Icon className="h-4 w-4 text-primary" />
+            </div>
             <h4 className="text-sm font-semibold text-foreground">Tipo: {label}</h4>
           </div>
 
-          <div className="border-t border-border/30 pt-2">
-            {contentMap[type]}
-          </div>
+          {/* Separator */}
+          <div className="separator-line" />
+
+          {/* Content */}
+          {contentMap[type]}
         </div>
       </HoverCardContent>
     </HoverCard>

@@ -88,7 +88,7 @@ export function PipelineStage({
     <TooltipProvider delayDuration={200}>
       <div
         className={cn(
-          "bg-card rounded-xl p-4 border border-border/50 shadow-apple-sm transition-apple",
+          "glass rounded-xl p-4 transition-apple",
           "hover:shadow-apple",
           className
         )}
@@ -100,11 +100,11 @@ export function PipelineStage({
             <TooltipTrigger asChild>
               <span
                 className={cn(
-                  "flex-shrink-0 flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full whitespace-nowrap cursor-help",
-                  status === "complete" && "bg-apple-green/10 text-apple-green",
+                  "flex-shrink-0 flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-lg whitespace-nowrap cursor-help",
+                  status === "complete" && "bg-apple-green/15 text-apple-green",
                   status === "processing" && colors.badge,
                   status === "pending" && "bg-muted text-muted-foreground",
-                  status === "error" && "bg-apple-red/10 text-apple-red"
+                  status === "error" && "bg-apple-red/15 text-apple-red"
                 )}
               >
                 {statusIcons[status]}
@@ -120,12 +120,12 @@ export function PipelineStage({
         
         {/* Items count */}
         {items && (
-          <div className="text-[11px] text-muted-foreground mb-2">
+          <div className="text-[11px] text-muted-foreground mb-2.5">
             {items.current.toLocaleString()}/{items.total.toLocaleString()}
           </div>
         )}
 
-        <div className={cn("h-2 rounded-full overflow-hidden", colors.bg)}>
+        <div className={cn("h-2 rounded-full overflow-hidden glass-inset")}>
           <div
             className={cn("h-full rounded-full transition-all duration-500 ease-out", colors.fill)}
             style={{ width: `${progress}%` }}
@@ -133,7 +133,7 @@ export function PipelineStage({
         </div>
 
         <div className="flex justify-end mt-2">
-          <span className={cn("text-xs font-medium", colors.text)}>{progress}%</span>
+          <span className={cn("text-xs font-semibold", colors.text)}>{progress}%</span>
         </div>
       </div>
     </TooltipProvider>

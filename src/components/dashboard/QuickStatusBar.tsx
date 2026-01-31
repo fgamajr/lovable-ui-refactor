@@ -54,16 +54,16 @@ export function QuickStatusBar({
         )}
       >
         {/* Sync Status Card */}
-        <div className="bg-card rounded-xl border border-border/50 p-3 shadow-apple-sm">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="p-1.5 rounded-lg bg-apple-blue/10">
+        <div className="glass rounded-xl p-4">
+          <div className="flex items-center gap-2.5 mb-3">
+            <div className="p-2 rounded-lg glass-inset bg-apple-blue/10">
               <Database className="h-3.5 w-3.5 text-apple-blue" />
             </div>
             <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
               Sync Status
             </span>
           </div>
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div className="flex items-center gap-2 cursor-help">
@@ -81,7 +81,7 @@ export function QuickStatusBar({
               {syncStatus.pending > 0 && (
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <span className="flex items-center gap-1 cursor-help">
+                    <span className="flex items-center gap-1.5 cursor-help">
                       <span className="w-1.5 h-1.5 rounded-full bg-apple-orange" />
                       {syncStatus.pending} Pending
                     </span>
@@ -94,7 +94,7 @@ export function QuickStatusBar({
               {syncStatus.inProgress > 0 && (
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <span className="flex items-center gap-1 cursor-help">
+                    <span className="flex items-center gap-1.5 cursor-help">
                       <span className="w-1.5 h-1.5 rounded-full bg-apple-blue animate-pulse" />
                       {syncStatus.inProgress} In Progress
                     </span>
@@ -107,7 +107,7 @@ export function QuickStatusBar({
               {syncStatus.failed > 0 && (
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <span className="flex items-center gap-1 cursor-help">
+                    <span className="flex items-center gap-1.5 cursor-help">
                       <span className="w-1.5 h-1.5 rounded-full bg-apple-red" />
                       {syncStatus.failed} Failed
                     </span>
@@ -122,16 +122,16 @@ export function QuickStatusBar({
         </div>
 
         {/* Elasticsearch Status Card */}
-        <div className="bg-card rounded-xl border border-border/50 p-3 shadow-apple-sm">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="p-1.5 rounded-lg bg-apple-green/10">
+        <div className="glass rounded-xl p-4">
+          <div className="flex items-center gap-2.5 mb-3">
+            <div className="p-2 rounded-lg glass-inset bg-apple-green/10">
               <Server className="h-3.5 w-3.5 text-apple-green" />
             </div>
             <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
               Elasticsearch
             </span>
           </div>
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div className="flex items-center gap-2 cursor-help">
@@ -160,16 +160,16 @@ export function QuickStatusBar({
         </div>
 
         {/* Throughput Card */}
-        <div className="bg-card rounded-xl border border-border/50 p-3 shadow-apple-sm">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="p-1.5 rounded-lg bg-apple-orange/10">
+        <div className="glass rounded-xl p-4">
+          <div className="flex items-center gap-2.5 mb-3">
+            <div className="p-2 rounded-lg glass-inset bg-apple-orange/10">
               <Activity className="h-3.5 w-3.5 text-apple-orange" />
             </div>
             <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
               Throughput
             </span>
           </div>
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div className="flex items-center gap-2 cursor-help">

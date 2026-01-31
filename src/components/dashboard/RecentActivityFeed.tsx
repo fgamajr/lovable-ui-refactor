@@ -140,13 +140,13 @@ export function RecentActivityFeed({
   return (
     <div
       className={cn(
-        "bg-card rounded-xl border border-border/50 p-4 shadow-apple-sm",
+        "glass rounded-2xl p-5",
         className
       )}
     >
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-semibold text-foreground">Recent Activity</h3>
-        <span className="text-xs text-muted-foreground">
+        <span className="text-xs text-muted-foreground px-2 py-1 rounded-lg glass-inset">
           {activities.length} events
         </span>
       </div>
